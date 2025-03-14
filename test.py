@@ -1,2 +1,6 @@
-a = [True if True else False]
-print(str(a))
+while True:
+    a = input('>>>')
+
+    while a != 'a':
+        print(a)
+    continue
