@@ -27,10 +27,18 @@ while con:
         cmd = input('>>>')
         if not cmd:
             continue
+
+        if cmd in ('quite','exit'):
+            con.close()
+            break
         
         con.send(cmd.encode())
 
         output = con.recv(1168).decode()
+
+        if cmd == 'download':
+            with open('server.download','w') as file:
+                file.write(output)
 
         print(output,end='\n',flush=True)
         continue

