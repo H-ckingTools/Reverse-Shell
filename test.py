@@ -1,13 +1,14 @@
-# import subprocess
+import socket
 
-# proc = subprocess.Popen(['cat server.py'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE,shell=True)
-# a,b = proc.communicate()
-# print(a.decode())
+server_ip = "127.0.0.1"
+server_port = 12345
 
-import json
+# Create a socket and connect
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((server_ip, server_port))
 
-name = {'ifhnsdg','aisdfhnosidfb'}
+# Open a file in binary mode and send it
+with open("example.txt", "rb") as file:
+    client_socket.sendfile(file)
 
-name = json.loads(name)
-
-print(name)
+client_socket.close()

