@@ -9,6 +9,7 @@ client_socket.connect((server_ip, server_port))
 
 # Open a file in binary mode and send it
 with open("example.txt", "rb") as file:
+    print(file)
     client_socket.sendfile(file)
 
 client_socket.close()

