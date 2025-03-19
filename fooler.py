@@ -50,18 +50,22 @@ def main():
             elif get_cmd.startswith('download '):  
                 try:
                     dfile = get_cmd.split()[1]
-                    # if os.path.isfile(dfile):
-                    file = open(dfile,'rb')
-                    data = file.read()
-                    # print(file)
-                    if not data:
-                        sock.send('File is empty!'.encode())
-                        file.close()
-                        continue
+                    if os.path.isfile(dfile):
+                        sizeoffile = os.path.getsize(dfile)
+                        sock.send(sizeoffile)
+
+                        try:
+                            #Lets start to send file
+                            act_file = open(dfile,'rb')
+                            act_file = act_file.read()
+                            sock.sendfile(act_file)
+                        except Exception as err:
+                            sock.send(str(err).encode())
+
                     else:
-                        sock.sendall(data)
-                    # else:
-                    #     sock.send('{} is not a file'.format(dfile).encode())
+                        sock.send('{} is not a file'.format(dfile).encode())
+
+
                 except Exception as e:
                     sock.send(str(e).encode())
 

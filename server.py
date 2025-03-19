@@ -29,15 +29,21 @@ while con:
         if not cmd:
             continue
         elif 'download' in cmd:
-            try:
-                getfiles = con.recv(4096)
-                getfile = open('server.down','wb')
-                getfile.write(getfiles)
-                getfile.close()
-            except Exception as err:
-                print(err)
-                exit(1)
-            
+            getfile_size = con.recv(1024)
+            chnk_cnt = 0
+
+            while chnk_cnt < getfile_size and not len(getfile_size) <= 0:
+                try:
+                    file = con.recv(4096)
+                    while True:
+                        file = con.recv(4096)
+                    with open(file,'wb') as f:
+                        f.write(file)
+
+                except:
+                    pass
+            #RESUME FROM IT 
+
         elif cmd in ('quite','exit'):
             con.close()
             sock.close()
