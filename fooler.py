@@ -7,7 +7,7 @@ def main():
     sock.connect(('127.0.0.1', 7777))
 
     while True:
-        get_cmd = sock.recv(1024).decode().strip().lower()
+        get_cmd = sock.recv(1024).decode().strip()
         if not get_cmd:  
             print("Connection closed by server.")
             break 
@@ -49,25 +49,17 @@ def main():
 
             elif get_cmd.startswith('download '):  
                 try:
-                    dfile = get_cmd.split()[1]
+                    dfile = '{}/{}'.format(os.getcwd(),get_cmd.split()[1])
                     if os.path.isfile(dfile):
-                        sizeoffile = os.path.getsize(dfile)
-                        sock.send(sizeoffile)
-
-                        try:
-                            #Lets start to send file
-                            act_file = open(dfile,'rb')
-                            act_file = act_file.read()
-                            sock.sendfile(act_file)
-                        except Exception as err:
-                            sock.send(str(err).encode())
-
+                        with open(dfile,'rb') as file:
+                            sock.sendfile(file)
+                        sock.shutdown(st.SHUT_WR)
+                        file.close()
                     else:
                         sock.send('{} is not a file'.format(dfile).encode())
-
-
                 except Exception as e:
                     sock.send(str(e).encode())
+
 
             elif get_cmd in ('pwd', 'cwd'):  
                 sock.send(os.getcwd().encode() + b"\n")
