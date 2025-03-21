@@ -1,16 +1,6 @@
 import socket as st
 from os import system
-from sys import exit
-
-def command_injection(cmd:str,client):
-    try:
-        client.send(cmd.encode())
-        getout = client.recv(1024).decode().strip()
-    
-    except Exception as err:
-        return err
-    
-    return getout
+# from sys import exit
 
 
 sock = st.socket(st.AF_INET,st.SOCK_STREAM)
