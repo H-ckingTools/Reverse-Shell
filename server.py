@@ -4,7 +4,7 @@ import sys
 
 sock = st.socket(st.AF_INET,st.SOCK_STREAM)
 sock.setsockopt(st.SOL_SOCKET,st.SO_REUSEADDR,1)
-sock.bind(('192.168.81.156',2222))
+sock.bind(('192.168.81.36',2222))
 sock.listen()
 con,addr = sock.accept()
 

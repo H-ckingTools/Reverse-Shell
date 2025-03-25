@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from threading import Thread
-from app.fooler import main,check_dependencies
+from fooler import main,check_dependencies
 
 
 def login():

