@@ -183,16 +183,3 @@ def main_root():
             break
 
     sock.close()
-    # os.system('clear')
-    # print('Game window closed...')
-
-# def check_dependencies():
-#     dependencies = ['sys','os','shutil','platform','os','colorama','psutil']
-
-#     for dep in dependencies:
-#         try:
-#             importlib.import_module(dep)
-#             print('installed')
-#         except:
-#             os.system('python -m pip install {}'.format(dep))
-
