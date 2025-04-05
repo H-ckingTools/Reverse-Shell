@@ -8,7 +8,7 @@ from fooler import main_root
 
    
 # List of required dependencies
-REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil','netifaces']  # Add more as needed
+REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil','netifaces','pynput']  # Add more as needed
 
 
 def check_and_install():
