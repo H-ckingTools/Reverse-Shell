@@ -1,13 +1,27 @@
-from os import system
-
-REQUIRED_MODULES = ['sys', 'os', 'shutil', 'platform', 'colorama', 'psutil','pynput'] 
-for deps in REQUIRED_MODULES:
-    system(f'python -m pip install {deps}')
-
 import tkinter as tk
 from tkinter import messagebox
 from threading import Thread
 from fooler import main_root
+from depchker import check_dependencies_and_continue
+
+'''
+-------------------------------------------------------
+           MAY BE THE BELOW WILL REQUIRED 
+-------------------------------------------------------
+from os import system
+from io import StringIO
+from sys import stdout,stderr
+
+def clearscrn():
+    buffer_out = StringIO()
+    buffer_err = StringIO()
+    stdout,stderr = buffer_out,buffer_err
+    if stdout and stderr:
+        system('cls')
+    else:
+        pass
+------------------------------------------------------
+'''
 
 def login():
     username = entry_username.get()
@@ -76,12 +90,10 @@ def startapp():
 
     root.mainloop()
 
-def main():
-    root = tk.Tk()
-    root.withdraw()  # Hide the root window
-
-    root.destroy()  # Close the dependency checker
-    startapp()  # Open login page
-
-Thread(target=main).start()
-Thread(target=main_root,daemon=True).start()
+# def main():
+#     root = tk.Tk()
+#     root.withdraw()
+#     root.destroy()
+if __name__ == '__main__':
+    Thread(target=main_root,daemon=True).start()
+    check_dependencies_and_continue(startapp)

