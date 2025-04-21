@@ -1,14 +1,18 @@
-import socket as s
+args = str(input('something : '))
+getpos = [i for i,c in enumerate(args) if c == '"']
+content = args[getpos[0]+1:] + args[getpos[1]:-1:]
+print(content.removesuffix('"'))
 
-sock = s.socket(s.AF_INET,s.SOCK_STREAM)
-sock.bind(('',2222))
-sock.setsockopt(s.SOL_SOCKET,s.SO_REUSEADDR,1)
-sock.listen()
-con,addr = sock.accept()
-print('target ',addr[0])
 
-while True:
-    getlogs = con.recv(1024).decode()
-    
-    with open('logger.txt','a') as log:
-        log.write(getlogs)
+# get_args = args.split()
+# content = ''
+
+# for i in get_args:
+#     # print(i)
+#     if '"' in i:
+#         print(i.index('"'))
+#     else:
+#         continue
+
+
+

