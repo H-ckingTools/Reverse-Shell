@@ -1,18 +1,15 @@
 args = str(input('something : '))
-getpos = [i for i,c in enumerate(args) if c == '"']
-content = args[getpos[0]+1:] + args[getpos[1]:-1:]
-print(content.removesuffix('"'))
+_args = args.split()
+poses = []
 
+for value,getpos in enumerate(_args):
+    if '"' in getpos:
+        poses.append(value)
 
-# get_args = args.split()
-# content = ''
+content = ''
+for i in range(poses[0],poses[1]+1):
+    content += _args[i] + ' '
 
-# for i in get_args:
-#     # print(i)
-#     if '"' in i:
-#         print(i.index('"'))
-#     else:
-#         continue
-
+print(content.replace('"',''))
 
 
