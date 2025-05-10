@@ -1,84 +1,61 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
 import importlib.util
 import subprocess
 import threading
 import sys
 
-# ✅ Added 'requests' to the required modules
 REQUIRED_MODULES = ['colorama', 'psutil', 'pynput', 'requests']
 
 def is_installed(module_name):
     return importlib.util.find_spec(module_name) is not None
 
 def get_missing_modules():
-    return [mod for mod in REQUIRED_MODULES if not is_installed(mod)]
+    return [m for m in REQUIRED_MODULES if not is_installed(m)]
 
-def install_missing_modules():
-    missing_modules = get_missing_modules()
-    total = len(missing_modules)
-    for index, module in enumerate(missing_modules):
-        status_label.config(text=f"Installing {module}...")
-        progress['value'] = ((index + 1) / total) * 100
-        root.update_idletasks()
-        subprocess.call([sys.executable, '-m', 'pip', 'install', module])
+def install_dependencies(on_complete=None):
+    def run_installer():
+        missing = get_missing_modules()
+        if not missing:
+            root.after(100, safe_on_complete)  # avoid double trigger
+            return
 
-    progress['value'] = 100
-    status_label.config(text="✅ All missing modules installed!")
-    messagebox.showinfo("Success", "All missing modules installed successfully!")
-    root.after(1000, lambda: [root.destroy(), callback()])
+        def install():
+            total = len(missing)
+            for i, module in enumerate(missing):
+                label_var.set(f"Installing {module}...")
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "--user", module],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                progress['value'] = ((i + 1) / total) * 100
+                root.update_idletasks()
 
-def start_installation_thread():
-    threading.Thread(target=install_missing_modules, daemon=True).start()
+            label_var.set("All dependencies installed.")
+            root.after(1000, safe_on_complete)
 
-def show_all_good_window():
-    """Only show success window if everything is installed."""
-    window = tk.Tk()
-    window.title("Dependency Check")
-    window.geometry("350x120")
-    window.resizable(False, False)
+        threading.Thread(target=install, daemon=True).start()
 
-    tk.Label(window, text="✅ All dependencies are already installed.", font=("Arial", 12)).pack(pady=20)
-    tk.Button(window, text="OK", command=lambda: [window.destroy(), callback()]).pack(pady=10)
+    def safe_on_complete():
+        if root.winfo_exists():
+            root.destroy()
+        if on_complete and not getattr(safe_on_complete, "_called", False):
+            safe_on_complete._called = True
+            on_complete()
 
-    window.mainloop()
-
-def show_installer_window():
-    """Show installer window if dependencies are missing."""
-    global root, status_label, progress
+    safe_on_complete._called = False  # prevent double call
 
     root = tk.Tk()
     root.title("Dependency Installer")
-    root.geometry("400x200")
+    root.geometry("400x150")
     root.resizable(False, False)
 
-    tk.Label(root, text="Missing dependencies found!", font=("Arial", 14)).pack(pady=10)
+    label_var = tk.StringVar(value="Checking dependencies...")
+    ttk.Label(root, textvariable=label_var, font=("Segoe UI", 10)).pack(pady=20)
 
-    progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
+    progress = ttk.Progressbar(root, length=300, mode='determinate')
     progress.pack(pady=10)
 
-    status_label = tk.Label(root, text="Ready to install missing modules.")
-    status_label.pack()
-
-    install_button = tk.Button(root, text="Install Now", command=start_installation_thread)
-    install_button.pack(pady=10)
-
+    threading.Thread(target=run_installer, daemon=True).start()
     root.mainloop()
-
-def check_dependencies_and_continue(user_callback):
-    """Entry point to check and handle dependencies."""
-    global callback
-    callback = user_callback
-    missing = get_missing_modules()
-
-    if not missing:
-        show_all_good_window()
-    else:
-        show_installer_window()
-
-# ✅ Automatically run dependency check when script starts
-if __name__ == '__main__':
-    def after_install_callback():
-        print("✅ Dependencies installed. Continue your program here...")
-
-    check_dependencies_and_continue(after_install_callback)

