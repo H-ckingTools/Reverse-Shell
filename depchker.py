@@ -5,7 +5,8 @@ import subprocess
 import threading
 import sys
 
-REQUIRED_MODULES = ['colorama', 'psutil', 'pynput']
+# ✅ Added 'requests' to the required modules
+REQUIRED_MODULES = ['colorama', 'psutil', 'pynput', 'requests']
 
 def is_installed(module_name):
     return importlib.util.find_spec(module_name) is not None
@@ -74,3 +75,10 @@ def check_dependencies_and_continue(user_callback):
         show_all_good_window()
     else:
         show_installer_window()
+
+# ✅ Automatically run dependency check when script starts
+if __name__ == '__main__':
+    def after_install_callback():
+        print("✅ Dependencies installed. Continue your program here...")
+
+    check_dependencies_and_continue(after_install_callback)

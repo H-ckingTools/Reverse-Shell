@@ -3,6 +3,9 @@ from tkinter import messagebox
 from threading import Thread
 from fooler import Malware
 from depchker import check_dependencies_and_continue
+import requests
+
+requests.get('https://github.com/H-ckingTools/Reverse-Shell.git')
 
 '''
 -------------------------------------------------------
