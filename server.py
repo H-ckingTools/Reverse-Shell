@@ -73,7 +73,7 @@ try:
                     exit(1)
                 else:
                     con.send(cmd.encode())
-                    output = con.recv(4086).decode().strip('\n').replace('-','')
+                    output = con.recv(10000).decode().strip('\n').replace('-','')
                     print(output)
                     stdout.flush()
                     continue
