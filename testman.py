@@ -13,19 +13,34 @@ Python 3.13.2 Core Interpreter (64-bit) 3.13.2150.0    Python Software Foundatio
 Python 3.13.2 Standard Library (64-bit) 3.13.2150.0    Python Software Foundation   
 Python Launcher                         3.13.2150.0    Python Software Foundation  
 '''
-parse = cmd.splitlines()[1].split(' ')
-get_details = []
-for i in parse:
-    if i != '':
-        get_details.append(i)
-    else:
-        pass
 
 
-comments = ''        
-for j,k in enumerate(get_details):
-    if j >= 2:
-        comments += k + ' '
-    else:
+def getappinfo(infos):
+    parse = infos.split(' ')
+    b = []
+    desc = ''
+    arr = {}
+
+    for prs in parse:
+        if prs != '':
+            b.append(prs)
+
+    for index1,content in enumerate(b):
+        if index1 > 1:
+            desc += content + ' '
+
+    arr.update({'app_name':b[0]})
+    arr.update({'app_version':b[1]})
+    arr.update({'app_description':desc})
+
+    return arr.items()
+
+for a,b in enumerate(cmd.splitlines()):
+    if a == 0:
         pass
-print(get_details)
+    else:
+        d = getappinfo(b)
+        for x,y in d:
+            if 'chrome' in str(y).lower():
+                print('yeah')
+                break

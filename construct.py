@@ -1,14 +1,14 @@
-from os import system
+from os import system,path
 from sys import argv
 
 # file_name = str(input('Enter your payload filename : '))
 if argv[1] == 'make':
-    file_name = 'maingame.py'
+    file_name = 'Malware-Detector.py'
 
     if file_name:
         system(f'wine pyinstaller --onefile --noconsole --icon=app.ico {file_name}')
         try:
-            system('cp dist/maingame.exe /media/mohamed/54B633F1B633D26A/Linux+Windows10/')
+            system(f'cp dist/{path.splitext(file_name)[0]}.exe /media/mohamed/54B633F1B633D26A/Linux+Windows10/')
             system('clear')
             print('successfully copied')
         except Exception as e:

